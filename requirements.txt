@@ -1,11 +1,9 @@
-fastapi
-uvicorn
-pydantic
-numpy
-torch
-rdkit
-pillow
-joblib
-scikit-learn
-
-fastapi uvicorn pydantic numpy torch rdkit pillow joblib scikit-learn
+fastapi==0.95.0
+uvicorn==0.20.0
+pydantic==1.10.7
+numpy==1.24.2
+torch==2.0.0
+rdkit==2023.3.2
+pillow==9.5.0
+joblib==1.2.0
+scikit-learn==1.2.2
