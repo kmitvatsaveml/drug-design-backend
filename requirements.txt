@@ -7,3 +7,4 @@ rdkit==2023.3.2
 pillow==9.5.0
 joblib==1.2.0
 scikit-learn==1.2.2
+requests==2.32.3

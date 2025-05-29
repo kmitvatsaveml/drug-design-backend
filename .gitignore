@@ -1,5 +1,2 @@
-# .gitignore
-*.pth
-*.pkl
 __pycache__/
 *.pyc
