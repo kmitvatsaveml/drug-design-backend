@@ -275,9 +275,6 @@
 #         logger.error(f"Internal server error: {e}")
 #         raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
 
-
-
-
 import logging
 import numpy as np
 from fastapi import FastAPI, HTTPException
