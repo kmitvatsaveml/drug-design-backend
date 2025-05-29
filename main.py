@@ -55,7 +55,7 @@ except Exception as e:
     logger.error(f"Model download failed: {e}")
     raise
 
-# Updated ViT Model Classes to match the trained model's architecture
+# Updated ViT Model Classes
 class PatchEmbedding(nn.Module):
     def __init__(self, img_size=32, patch_size=4, in_channels=3, embedding_dim=48):
         super(PatchEmbedding, self).__init__()
@@ -67,17 +67,9 @@ class PatchEmbedding(nn.Module):
             kernel_size=patch_size,
             stride=patch_size
         )
-        self.position_embedding = nn.Parameter(
-            torch.randn(1, self.num_patches + 1, embedding_dim)
-        )
-        self.class_embedding = nn.Parameter(torch.randn(1, 1, embedding_dim))
 
     def forward(self, x):
-        B = x.shape[0]
         x = self.patcher(x).flatten(2).transpose(1, 2)
-        cls_tokens = self.class_embedding.expand(B, -1, -1)
-        x = torch.cat((cls_tokens, x), dim=1)
-        x += self.position_embedding
         return x
 
 class MultiheadSelfAttentionBlock(nn.Module):
@@ -148,12 +140,17 @@ class ViT(nn.Module):
         dropout=0.1
     ):
         super(ViT, self).__init__()
+        self.num_patches = (img_size // patch_size) ** 2
         self.patch_embedding = PatchEmbedding(
             img_size=img_size,
             patch_size=patch_size,
             in_channels=in_channels,
             embedding_dim=embedding_dim
         )
+        self.position_embedding = nn.Parameter(
+            torch.randn(1, self.num_patches + 1, embedding_dim)
+        )
+        self.class_embedding = nn.Parameter(torch.randn(1, 1, embedding_dim))
         self.encoder_blocks = nn.ModuleList([
             TransformerEncoderBlock(
                 embedding_dim=embedding_dim,
@@ -168,7 +165,11 @@ class ViT(nn.Module):
         )
 
     def forward(self, x):
+        B = x.shape[0]
         x = self.patch_embedding(x)
+        cls_tokens = self.class_embedding.expand(B, -1, -1)
+        x = torch.cat((cls_tokens, x), dim=1)
+        x += self.position_embedding
         for block in self.encoder_blocks:
             x = block(x)
         x = self.classifier(x[:, 0])
